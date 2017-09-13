@@ -6,7 +6,7 @@
  * Time: 1:03 PM
  */
 
-namespace Tusiomo\Traits;
+namespace Tusiomo\Eloquent\Traits;
 
 
 use Tusimo\Eloquent\Relations\EmbedsMany;
