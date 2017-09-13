@@ -1,5 +1,5 @@
 <?php
-namespace Tusiomo\Eloquent\Traits;
+namespace Tusimo\Eloquent\Traits;
 
 use Tusimo\Eloquent\Relations\EmbedsMany;
 
