@@ -2,6 +2,7 @@
 namespace  Tusimo\Eloquent\Relations;
 
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class EmbedsMany extends HasMany
@@ -82,5 +83,64 @@ class EmbedsMany extends HasMany
         return collect($models)->map(function ($value) use ($key) {
             return explode(',', $key ? $value->getAttribute($key) : $value->getKey());
         })->flatten()->values()->unique()->sort()->all();
+    }
+
+    /**
+     * Attach a model instance to the parent model.
+     *
+     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @return \Illuminate\Database\Eloquent\Model|false
+     */
+    public function save(Model $model)
+    {
+        return $this->saveEmbedsModel([$model->getKey()]);
+    }
+
+    /**
+     * Attach a collection of models to the parent instance.
+     *
+     * @param  \Traversable|array  $models
+     * @return \Illuminate\Database\Eloquent\Model|false
+     */
+    public function saveMany($models)
+    {
+        $newValue = [];
+        foreach ($models as $model) {
+            $newValue[] = $model->getKey();
+        }
+        return $this->saveEmbedsModel($newValue);
+    }
+
+    /**
+     * @param array $newValue
+     * @return \Illuminate\Database\Eloquent\Model|false
+     */
+    private function saveEmbedsModel($newValue)
+    {
+        $oldValue = explode(',', $this->getParentKey());
+        $newValue = array_unique(array_merge($oldValue, $newValue));
+        $this->getParent()->setAttribute($this->localKey, implode(',', $newValue));
+        //set relations if has already has relation
+        if ($this->getParent()->save()) {
+            if (!$this->getParent()->getRelations()) {
+                return $this->getParent();
+            } else {
+                return $this->getParent()->refresh();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Create a new instance of the related model.
+     *
+     * @param  array  $attributes
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function create(array $attributes)
+    {
+        return tap($this->related->newInstance($attributes), function ($instance) {
+            $this->saveEmbedsModel([$instance->getKey()]);
+        });
     }
 }
