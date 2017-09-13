@@ -1,17 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tusimo
- * Date: 13/09/2017
- * Time: 1:03 PM
- */
-
 namespace Tusiomo\Eloquent\Traits;
-
 
 use Tusimo\Eloquent\Relations\EmbedsMany;
 
-class EmbedsRelation
+trait EmbedsRelation
 {
     /**
      * Define a one-to-many relationship.
