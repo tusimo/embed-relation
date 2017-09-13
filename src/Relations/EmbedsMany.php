@@ -44,7 +44,6 @@ class EmbedsMany extends HasMany
         foreach ($models as $model) {
             $model->setRelation($relation, $this->related->newCollection());
         }
-
         return $models;
     }
 
@@ -58,7 +57,14 @@ class EmbedsMany extends HasMany
      */
     public function match(array $models, Collection $results, $relation)
     {
-        // TODO: Implement match() method.
+        $results = $results->keyBy(explode('.', $this->foreignKey)[1]);
+        foreach ($models as $model) {
+            $items = $results->filter(function ($value, $key) use ($model) {
+                return in_array($key, explode(',', $model->getAttribute($this->localKey)));
+            });
+            $model->setRelation($relation, $items->values());
+        }
+        return $models;
     }
 
     /**
@@ -75,6 +81,6 @@ class EmbedsMany extends HasMany
     {
         return collect($models)->map(function ($value) use ($key) {
             return explode(',', $key ? $value->getAttribute($key) : $value->getKey());
-        })->values()->unique()->sort()->all();
+        })->flatten()->values()->unique()->sort()->all();
     }
 }
