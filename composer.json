@@ -1,0 +1,39 @@
+
+{
+  "name": "tusimo/laravel-relation",
+  "description": "a relation for laravel",
+  "keywords": ["laravel","eloquent","database","model"],
+  "homepage": "https://github.com/tusimo/laravel-relation",
+  "authors": [
+    {
+      "name": "tusimo",
+      "homepage": "https://github.com/tusimo/laravel-relation"
+    }
+  ],
+  "license" : "MIT",
+  "require": {
+    "illuminate/support": "^5.1",
+    "illuminate/container": "^5.1",
+    "illuminate/database": "^5.1",
+    "illuminate/events": "^5.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^5.0|^6.0",
+    "orchestra/testbench": "^3.1",
+    "fabpot/php-cs-fixer": "^1.11",
+    "phpunit/php-code-coverage": "^3.3",
+    "satooshi/php-coveralls": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Tusimo\\Eloquent": "src/"
+    }
+  },
+  "autoload-dev": {
+    "classmap": [
+      "tests/TestCase.php",
+      "tests/models",
+      "tests/seeds"
+    ]
+  }
+}
