@@ -13,13 +13,13 @@ trait EmbedsRelation
      * @param  string  $localKey
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function hasMany($related, $foreignKey = null, $localKey = null)
+    public function embedsMany($related, $foreignKey = null, $localKey = null)
     {
         $instance = $this->newRelatedInstance($related);
 
-        $foreignKey = $foreignKey ?: $this->getForeignKey();
+        $foreignKey = $foreignKey ?: $instance->getKeyName();
 
-        $localKey = $localKey ?: $this->getKeyName();
+        $localKey = $localKey ?: str_singular($instance->getTable()) . '_' . $this->getKeyName() . 's';
 
         return new EmbedsMany(
             $instance->newQuery(), $this, $instance->getTable().'.'.$foreignKey, $localKey
