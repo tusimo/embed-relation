@@ -26,14 +26,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Tusimo\\Eloquent": "src/"
+      "Tusimo\\Eloquent\\": "src/"
     }
-  },
-  "autoload-dev": {
-    "classmap": [
-      "tests/TestCase.php",
-      "tests/models",
-      "tests/seeds"
-    ]
   }
 }
