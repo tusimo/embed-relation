@@ -16,7 +16,6 @@ class EmbedsMany extends HasMany
     {
         if (static::$constraints) {
             $this->query->whereIn($this->foreignKey, explode(',', $this->getParentKey()));
-            $this->query->whereNotNull($this->foreignKey);
         }
     }
 
@@ -117,9 +116,7 @@ class EmbedsMany extends HasMany
      */
     private function saveEmbedsModel($newValue)
     {
-        $oldValue = explode(',', $this->getParentKey());
-        $newValue = array_unique(array_merge($oldValue, $newValue));
-        $this->getParent()->setAttribute($this->localKey, implode(',', $newValue));
+        $this->addEmbedsIds($newValue);
         //set relations if has already has relation
         if ($this->getParent()->save()) {
             if (!$this->getParent()->getRelations()) {
@@ -129,6 +126,14 @@ class EmbedsMany extends HasMany
             }
         }
         return false;
+    }
+
+    private function addEmbedsIds($newIds)
+    {
+        $oldValue = explode(',', $this->getParentKey());
+        $newValue = array_unique(array_merge($oldValue, $newIds));
+        $this->getParent()->setAttribute($this->localKey, implode(',', $newValue));
+        return $this;
     }
 
     /**
@@ -142,5 +147,40 @@ class EmbedsMany extends HasMany
         return tap($this->related->newInstance($attributes), function ($instance) {
             $this->saveEmbedsModel([$instance->getKey()]);
         });
+    }
+
+    /**
+     * Find a model by its primary key or return new instance of the related model.
+     *
+     * @param  mixed  $id
+     * @param  array  $columns
+     * @return \Illuminate\Support\Collection|\Illuminate\Database\Eloquent\Model
+     */
+    public function findOrNew($id, $columns = ['*'])
+    {
+        if (is_null($instance = $this->find($id, $columns))) {
+            $instance = $this->related->newInstance();
+
+            $this->addEmbedsIds([$instance->getKey()]);
+        }
+
+        return $instance;
+    }
+
+    /**
+     * Get the first related model record matching the attributes or instantiate it.
+     *
+     * @param  array  $attributes
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function firstOrNew(array $attributes)
+    {
+        if (is_null($instance = $this->where($attributes)->first())) {
+            $instance = $this->related->newInstance($attributes);
+
+            $this->addEmbedsIds([$instance->getKey()]);
+        }
+
+        return $instance;
     }
 }
