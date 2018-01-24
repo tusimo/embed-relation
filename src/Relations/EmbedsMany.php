@@ -1,5 +1,5 @@
 <?php
-namespace  Hotelgg\Eloquent\Relations;
+namespace  Tusimo\Eloquent\Relations;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -8,17 +8,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class EmbedsMany extends HasMany
 {
-    protected $slash = ',';
+    protected $delimiter = ',';
 
-    public function __construct(Builder $query, Model $parent, $foreignKey, $localKey, $slash = ',')
+    public function __construct(Builder $query, Model $parent, $foreignKey, $localKey, $delimiter = ',')
     {
         parent::__construct($query, $parent, $foreignKey, $localKey);
-        $this->slash = $slash;
+        $this->delimiter = $delimiter;
     }
 
     private function getIdsArray($ids)
     {
-        return is_array($ids) ? $ids : explode($this->slash, $ids);
+        return array_filter(is_array($ids) ? $ids : explode($this->delimiter, $ids));
     }
     /**
      * Set the base constraints on the relation query.
@@ -155,7 +155,7 @@ class EmbedsMany extends HasMany
     {
         $oldValue = $this->getIdsArray($this->getParentKey());
         $newValue = array_unique(array_merge($oldValue, $newIds));
-        $this->getParent()->setAttribute($this->localKey, implode($this->slash, $newValue));
+        $this->getParent()->setAttribute($this->localKey, implode($this->delimiter, $newValue));
         return $this;
     }
 
@@ -215,12 +215,12 @@ class EmbedsMany extends HasMany
     public function associate($ids)
     {
         if (is_string($ids)) {
-            $ids = explode($this->slash, $ids);
+            $ids = explode($this->delimiter, $ids);
         }
-        $oldValues = explode($this->slash, $this->getParent()->getAttribute($this->localKey));
+        $oldValues = explode($this->delimiter, $this->getParent()->getAttribute($this->localKey));
         $newValues = array_unique(array_merge($oldValues, $ids));
         if (!empty($newValues)) {
-            $newValues = implode($this->slash, $newValues);
+            $newValues = implode($this->delimiter, $newValues);
         } else {
             $newValues = '';
         }
@@ -236,15 +236,15 @@ class EmbedsMany extends HasMany
     public function dissociate($ids)
     {
         if (is_string($ids)) {
-            $ids = explode($this->slash, $ids);
+            $ids = explode($this->delimiter, $ids);
         }
-        $oldValues = explode($this->slash, $this->getParent()->getAttribute($this->localKey));
+        $oldValues = explode($this->delimiter, $this->getParent()->getAttribute($this->localKey));
         if (empty($oldValues)) {
             return $this;
         }
         $newValues = array_unique(array_diff($oldValues, $ids));
         if (!empty($newValues)) {
-            $newValues = implode($this->slash, $newValues);
+            $newValues = implode($this->delimiter, $newValues);
         } else {
             $newValues = '';
         }
