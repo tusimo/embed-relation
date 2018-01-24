@@ -1,12 +1,25 @@
 <?php
-namespace  Tusimo\Eloquent\Relations;
+namespace  Hotelgg\Eloquent\Relations;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class EmbedsMany extends HasMany
 {
+    protected $slash = ',';
+
+    public function __construct(Builder $query, Model $parent, $foreignKey, $localKey, $slash = ',')
+    {
+        parent::__construct($query, $parent, $foreignKey, $localKey);
+        $this->slash = $slash;
+    }
+
+    private function getIdsArray($ids)
+    {
+        return is_array($ids) ? $ids : explode($this->slash, $ids);
+    }
     /**
      * Set the base constraints on the relation query.
      *
@@ -15,7 +28,7 @@ class EmbedsMany extends HasMany
     public function addConstraints()
     {
         if (static::$constraints) {
-            $this->query->whereIn($this->foreignKey, explode(',', $this->getParentKey()));
+            $this->query->whereIn($this->foreignKey, $this->getIdsArray($this->getParentKey()));
         }
     }
 
@@ -59,10 +72,20 @@ class EmbedsMany extends HasMany
     {
         $results = $results->keyBy(explode('.', $this->foreignKey)[1]);
         foreach ($models as $model) {
-            $items = $results->filter(function ($value, $key) use ($model) {
-                return in_array($key, explode(',', $model->getAttribute($this->localKey)));
+            $currentIds = $this->getIdsArray($model->getAttribute($this->localKey));
+            $items = $results->filter(function ($value, $key) use ($model, $currentIds) {
+                return in_array($key, $currentIds);
             });
-            $model->setRelation($relation, $items->values());
+
+            if (empty($this->query->getQuery()->orders)) {
+                $newItems = new Collection();
+                foreach ($currentIds as $currentId) {
+                    $newItems->push($items[$currentId]);
+                }
+                $model->setRelation($relation, $newItems->values());
+            } else {
+                $model->setRelation($relation, $items->values());
+            }
         }
         return $models;
     }
@@ -79,9 +102,9 @@ class EmbedsMany extends HasMany
 
     private function getEmbedsKeys($models, $key)
     {
-        return collect($models)->map(function ($value) use ($key) {
-            return explode(',', $key ? $value->getAttribute($key) : $value->getKey());
-        })->flatten()->values()->unique()->sort()->all();
+        return (new Collection($models))->map(function ($value) use ($key) {
+            return $this->getIdsArray($key ? $value->getAttribute($key) : $value->getKey());
+        })->flatten()->filter()->unique()->values()->all();
     }
 
     /**
@@ -130,9 +153,9 @@ class EmbedsMany extends HasMany
 
     private function addEmbedsIds($newIds)
     {
-        $oldValue = explode(',', $this->getParentKey());
+        $oldValue = $this->getIdsArray($this->getParentKey());
         $newValue = array_unique(array_merge($oldValue, $newIds));
-        $this->getParent()->setAttribute($this->localKey, implode(',', $newValue));
+        $this->getParent()->setAttribute($this->localKey, implode($this->slash, $newValue));
         return $this;
     }
 
@@ -182,5 +205,73 @@ class EmbedsMany extends HasMany
         }
 
         return $instance;
+    }
+
+    /**
+     * 添加xx_ids到列里，并不保存
+     * @param $ids
+     * @return $this
+     */
+    public function associate($ids)
+    {
+        if (is_string($ids)) {
+            $ids = explode($this->slash, $ids);
+        }
+        $oldValues = explode($this->slash, $this->getParent()->getAttribute($this->localKey));
+        $newValues = array_unique(array_merge($oldValues, $ids));
+        if (!empty($newValues)) {
+            $newValues = implode($this->slash, $newValues);
+        } else {
+            $newValues = '';
+        }
+        $this->getParent()->setAttribute($this->localKey, $newValues);
+        return $this;
+    }
+
+    /**
+     * 将ids删除，不保存
+     * @param $ids
+     * @return $this
+     */
+    public function dissociate($ids)
+    {
+        if (is_string($ids)) {
+            $ids = explode($this->slash, $ids);
+        }
+        $oldValues = explode($this->slash, $this->getParent()->getAttribute($this->localKey));
+        if (empty($oldValues)) {
+            return $this;
+        }
+        $newValues = array_unique(array_diff($oldValues, $ids));
+        if (!empty($newValues)) {
+            $newValues = implode($this->slash, $newValues);
+        } else {
+            $newValues = '';
+        }
+        $this->getParent()->setAttribute($this->localKey, $newValues);
+        return $this;
+    }
+
+    /**
+     * 添加ids并保存
+     * @param $ids
+     * @return $this
+     */
+    public function attach($ids)
+    {
+        $this->associate($ids);
+        $this->getParent()->save();
+        return $this;
+    }
+
+    /**
+     * 删除ids并保存
+     * @param $ids
+     * @return $this
+     */
+    public function detach($ids)
+    {
+        $this->dissociate($ids)->getParent()->save();
+        return $this;
     }
 }

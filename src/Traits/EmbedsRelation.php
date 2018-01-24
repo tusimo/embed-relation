@@ -1,7 +1,7 @@
 <?php
-namespace Tusimo\Eloquent\Traits;
+namespace Hotelgg\Eloquent\Traits;
 
-use Tusimo\Eloquent\Relations\EmbedsMany;
+use Hotelgg\Eloquent\Relations\EmbedsMany;
 
 trait EmbedsRelation
 {
@@ -15,15 +15,16 @@ trait EmbedsRelation
      */
     public function embedsMany($related, $foreignKey = null, $localKey = null)
     {
-        $instance = $this->newRelatedInstance($related);
+        $instance = method_exists($this, 'newRelatedInstance')
+            ? $this->newRelatedInstance($related)
+            : new $related;
 
         $foreignKey = $foreignKey ?: $instance->getKeyName();
 
         $localKey = $localKey ?: str_singular($instance->getTable()) . '_' . $this->getKeyName() . 's';
 
         return new EmbedsMany(
-            $instance->newQuery(), $this, $instance->getTable().'.'.$foreignKey, $localKey
+            $instance->newQuery(), $this, $instance->getTable().'.'.$foreignKey, $localKey, ','
         );
     }
-
 }
