@@ -1,4 +1,4 @@
-tusimo-relation
+embed-relation
 ==================
 add a new relation is missing from [Laravel](https://laravel.com/)'s ORM. embedsMany extends [Eloquent](https://laravel.com/docs/master/eloquent) ORM .
 
@@ -10,7 +10,7 @@ Either [PHP](https://php.net) 5.6+ is required.
 To get the latest version of embedsMany, simply require the project using [Composer](https://getcomposer.org):
 
 ```bash
-$ composer require tusimo/laravel-relation
+$ composer require tusimo/embed-relation
 ```
 
 Instead, you may of course manually update your require block and run `composer update` if you so choose:
@@ -18,7 +18,7 @@ Instead, you may of course manually update your require block and run `composer 
 ```json
 {
     "require": {
-        "tusimo/laravel-relation": "^0.1"
+        "tusimo/embed-relation": "^0.1"
     }
 }
 ```
