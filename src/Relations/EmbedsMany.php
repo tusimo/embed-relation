@@ -80,7 +80,9 @@ class EmbedsMany extends HasMany
             if (empty($this->query->getQuery()->orders)) {
                 $newItems = new Collection();
                 foreach ($currentIds as $currentId) {
-                    $newItems->push($items[$currentId]);
+                    if (isset($items[$currentId])) {
+                        $newItems->push($items[$currentId]);
+                    }
                 }
                 $model->setRelation($relation, $newItems->values());
             } else {
