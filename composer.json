@@ -1,13 +1,13 @@
 
 {
-  "name": "tusimo/laravel-relation",
+  "name": "tusimo/embed-relation",
   "description": "a relation for laravel",
   "keywords": ["laravel","eloquent","database","model"],
-  "homepage": "https://github.com/tusimo/laravel-relation",
+  "homepage": "https://github.com/tusimo/embed-relation",
   "authors": [
     {
       "name": "tusimo",
-      "homepage": "https://github.com/tusimo/laravel-relation"
+      "homepage": "https://github.com/tusimo/embed-relation"
     }
   ],
   "license" : "MIT",
