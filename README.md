@@ -1,4 +1,5 @@
 embed-relation
+[![Latest Stable Version](http://img.shields.io/github/release/tusimo/embed-relation.svg)](https://packagist.org/packages/tusimo/embed-relation) [![Total Downloads](http://img.shields.io/packagist/dm/tusimo/embed-relation.svg)](https://packagist.org/packages/tusimo/embed-relation) 
 ==================
 add a new relation is missing from [Laravel](https://laravel.com/)'s ORM. embedsMany extends [Eloquent](https://laravel.com/docs/master/eloquent) ORM .
 
