@@ -39,14 +39,25 @@ class User extends Model {
 Consider User has several favorite books and the book_ids just store in the user table as book_ids column.
 We want this column can to load use relations.
 So we can do it like this.
-We user table just like these.
+We have user table just like this.
 
-| id     | username  | book_ids |
-|:----- :|:---------:|:--------:|
-| 1      | tusimo    |   1,2    |
-| 2      | alan      |   4,3,2  |
-| 3      | lily      |   6,4,8  |
+| id | user_name | book_ids |
+|----|-----------|----------|
+| 1  | tusimo    | 1,2,3    |
+| 2  | john      | 2,4,7    |
+| 3  | aly       | 5        |
 
+and book table like this,
+
+| id | book       |
+|----|------------|
+| 1  | css        |
+| 2  | php        |
+| 3  | javascript |
+| 4  | database   |
+| 5  | sql        |
+| 6  | python     |
+| 7  | html       |
 
 ```php
 class User extends Model {
