@@ -42,7 +42,7 @@ class User extends Model {
         //'more_json_data' => [],
     ];
     
-    $casts = [
+    protected $casts = [
         'book_ids' => 'integer_array',
         'home_address' => 'string',
         'follower_ids' => 'iinteger_array',
