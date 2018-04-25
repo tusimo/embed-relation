@@ -23,6 +23,9 @@
   "autoload": {
     "psr-4": {
       "Tusimo\\Eloquent\\": "src/"
-    }
+    },
+    "files": [
+      "src/helpers.php"
+    ]
   }
 }
