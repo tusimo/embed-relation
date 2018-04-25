@@ -45,7 +45,7 @@ class User extends Model {
     protected $casts = [
         'book_ids' => 'integer_array',
         'home_address' => 'string',
-        'follower_ids' => 'iinteger_array',
+        'follower_ids' => 'integer_array',
     ];
     ...
 }
