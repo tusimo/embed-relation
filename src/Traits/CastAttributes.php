@@ -31,7 +31,7 @@ trait CastAttributes
             parent::setAttribute($key, $value);
         }
         if ($natureColumn = $this->getNatureColumnName($key)) {
-            $values = string_to_array($this->attributes[$natureColumn], 'JSON');
+            $values = string_to_array($this->attributes[$natureColumn] ?? '', 'JSON');
             $values[$this->getVirtualOriginalKey($key, $natureColumn)] = $this->attributes[$key];
             $this->attributes[$natureColumn] = json_encode($values);
             unset($this->attributes[$key]);
@@ -42,7 +42,7 @@ trait CastAttributes
     public function getAttribute($key)
     {
         if ($natureColumn = $this->getNatureColumnName($key)) {
-            $values = string_to_array($this->attributes[$natureColumn], 'JSON');
+            $values = string_to_array($this->attributes[$natureColumn] ?? '', 'JSON');
             $this->attributes[$key] = $values[$this->getVirtualOriginalKey($key, $natureColumn)] ?? null;
             $value = parent::getAttribute($key);
             unset($this->attributes[$key]);
