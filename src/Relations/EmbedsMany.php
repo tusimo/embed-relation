@@ -167,7 +167,7 @@ class EmbedsMany extends HasMany
      * @param  array  $attributes
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function create(array $attributes)
+    public function create(array $attributes = [])
     {
         return tap($this->related->newInstance($attributes), function ($instance) {
             $this->saveEmbedsModel([$instance->getKey()]);
@@ -198,7 +198,7 @@ class EmbedsMany extends HasMany
      * @param  array  $attributes
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function firstOrNew(array $attributes)
+    public function firstOrNew(array $attributes, array $values = [])
     {
         if (is_null($instance = $this->where($attributes)->first())) {
             $instance = $this->related->newInstance($attributes);
